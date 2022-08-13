@@ -1,0 +1,11 @@
+Aniket 0000
+Anushka 0001
+Ishita 0010
+Jessica 0011
+Morgan 0100
+Nitisha 0101
+Nitya 0110
+Rohit 0111
+Sabreen 1000
+Sharon 1001
+Sneha 1010

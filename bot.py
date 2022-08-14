@@ -1,6 +1,7 @@
 # telegram imports
 API_TOKEN = '5350627481:AAH3m0Nw9JQJ9ShkoZaZ5T_TknXiZ9OUVwI'
 
+from bdb import effective
 import logging
 from telegram import Update
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CallbackContext, CommandHandler
@@ -12,25 +13,23 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+# handle clearChat command
+async def clearChat(update: Update, context: CallbackContext.DEFAULT_TYPE):
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="clearing..." + "\n"*100 + "chat cleared"
+    )
+
 # handle start command
 async def start(update: Update, context: CallbackContext.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Hey there, welcome to the team! Use the /setup command to register yourself as employee."
+        text="Hey there, welcome to the team! Use the /help command for a list of commands."
     )
-    print(update.effective_chat.id)
-
-# handle setup command
-async def setup(update: Update, context: CallbackContext.DEFAULT_TYPE):
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Alright let's begin your setup (this will be fast I promise)."
-    )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Respond with your first name."
-    )
-
+    print(update.effective_user.first_name)
+    print(update.effective_user.last_name)
+    print(update.effective_user.id)
+    db_hand.create_employee(update.effective_user.first_name, update.effective_user.last_name, update.effective_user.id)
 
 # handle help command
 async def help(update: Update, context: CallbackContext.DEFAULT_TYPE):
@@ -86,8 +85,8 @@ if __name__ == '__main__':
     
     # create handlers
     handlers = [
+        CommandHandler('clearChat', clearChat),
         CommandHandler('start', start),
-        CommandHandler('setup', setup),
         CommandHandler('help', help),
         CommandHandler('settings', settings),
         CommandHandler('viewshifts', viewshifts),

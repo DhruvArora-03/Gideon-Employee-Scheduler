@@ -1,4 +1,5 @@
 from venv import create
+from xml.dom.pulldom import END_ELEMENT
 import pyodbc
 
 # stop deprecation warnings
@@ -58,7 +59,18 @@ def create_shift_with_strings(date: str, empName: str, shiftTime: str):
 def create_employee(f_name: str, l_name: str, e_id: int):
     cnxn = pyodbc.connect(Trusted_Connection='yes', driver = '{SQL Server}',server = 'DHRUV-ALIENWARE\SQLEXPRESS' , database = 'GES')
     cursor = cnxn.cursor()
-    cursor.execute('INSERT INTO Employees(EmployeeID, FirstName, LastName) '
+    
+    # first check if an employee with this ID already exists
+    cursor.execute("SELECT * FROM Employees WHERE Employees.EmployeeID={}".format(e_id))
+    
+    if (cursor.fetchone() != None):
+        print('Employee with id {} already exists'.format(e_id))
+    else:
+        print('Creating employee...')
+        cursor.execute("INSERT INTO Employees(EmployeeID, FirstName, LastName) VALUES ({}, '{}', '{}')".format(e_id, f_name, l_name))
+        cnxn.commit()
+
+    cnxn.close()
 
 # cnxn = pyodbc.connect(Trusted_Connection='yes', driver = '{SQL Server}',server = 'DHRUV-ALIENWARE\SQLEXPRESS' , database = 'GES')
 # cursor = cnxn.cursor()

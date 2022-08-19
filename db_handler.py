@@ -30,14 +30,19 @@ def get_all_employee_names():
 def get_all_shifts_for_employee(id: int):
     cnxn = generate_db_connection()
     cursor = cnxn.cursor()
-    cursor.execute("SELECT * FROM ShiftAssignments WHERE EmployeeID = ?", id)
-    shifts = list()
-    while 1:
+    cursor.execute("SELECT ShiftAssignments.ShiftID FROM ShiftAssignments WHERE EmployeeID = ?", id)
+    shiftIDs = []
+    row = cursor.fetchone()
+    while row:
+        shiftIDs.append(row.ShiftID)
         row = cursor.fetchone()
-        if not row:
-            break
-        cursor.execute("SELECT * FROM Shifts WHERE ShiftID = ?", row.ShiftID)
-        shifts.append('{} - {}'.format(row.AssignmentDate, cursor.fetchone().ShiftTime))
+
+    shifts = []
+    for id in shiftIDs:
+        print('running command', "SELECT Shifts.DateTime FROM Shifts WHERE ShiftID =", id)
+        cursor.execute("SELECT Shifts.DateTime FROM Shifts WHERE ShiftID = ?", id)
+        shifts.append(str(cursor.fetchone().DateTime))
+    
     cnxn.commit()
     cnxn.close()
     return shifts
@@ -59,6 +64,27 @@ def create_shift_with_strings(date: str, empName: str, shiftTime: str):
     cnxn.commit()
     cnxn.close()
     create_shift_with_IDs(date, empID, shiftID)
+
+def delete_shift(shiftDate: str, empID: int):
+    cnxn = generate_db_connection()
+    cursor = cnxn.cursor()
+    cursor.execute("SELECT Shifts.ShiftID FROM Shifts WHERE DATEDIFF(day, Shifts.DateTime, '{}') = 0".format(shiftDate))
+    row = cursor.fetchone()
+    if row:
+        shiftID = row.ShiftID
+        print('shiftID', shiftID)
+        cursor.execute("SELECT * FROM ShiftAssignments WHERE ShiftAssignments.ShiftID = ? AND ShiftAssignments.EmployeeID = ?", shiftID, empID)
+        row = cursor.fetchone()
+        if row:
+            cursor.execute("DELETE FROM ShiftAssignments WHERE ShiftAssignments.ShiftID = ? AND ShiftAssignments.EmployeeID = ?", shiftID, empID)
+            cnxn.commit()
+            cnxn.close()
+            return True
+    
+
+    cnxn.commit()
+    cnxn.close()
+    return False
 
 # this method creates a new employee with the specified parameters
 def create_employee(f_name: str, l_name: str, e_id: int):

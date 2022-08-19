@@ -50,10 +50,9 @@ def settings(update: Update, context: CallbackContext):
         text="No editable settings yet"
     )
 
-# handle viewshifts command - TODO
+# handle viewshifts command
 def viewshifts(update: Update, context: CallbackContext):
-    # TODO: get shifts from database
-    shifts = list()
+    shifts = db_handler.get_all_shifts_for_employee(update.effective_user.id)
 
     if len(shifts) == 0:
         context.bot.send_message(
@@ -63,15 +62,34 @@ def viewshifts(update: Update, context: CallbackContext):
     else:
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="You are currently scheduled to work the following shifts:\n" + "\n".join(shifts)
+            text="You are currently scheduled to work the following shifts:"
         )
+        for shift in shifts:
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=shift
+            )
+            
 
 # handle cancelshift command - TODO
 def cancelshift(update: Update, context: CallbackContext):
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Enter the ID number of the shift you want to cancel. Check out the /viewshifts command to find the ID number"
-    )
+    if len(context.args) == 0:
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Cancel a shift by typing the command in this format: \n\"/cancelshift [DATE]\"\nFor instance, to cancel a shift for April 20th, 2022 you would say: \"/cancelshift 2022-04-20\""
+        )
+    else:
+        if db_handler.delete_shift(context.args[0], update.effective_user.id):
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text="Shift successfully canceled."
+            )
+        else: 
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text="You are not scheduled for any shifts on {}.".format(context.args[0])
+            )
+
 
 # handle non-command messages
 def respond_to_non_command(update: Update, context: CallbackContext):
@@ -81,7 +99,6 @@ def respond_to_non_command(update: Update, context: CallbackContext):
     )
 
 if __name__ == '__main__':
-    # application = Application.builder().token(API_TOKEN).build()
     updater = Updater(API_TOKEN)
 
     # Get the dispatcher to register handlers

@@ -1,9 +1,23 @@
-mat-form-field {
-    width: 85%;
-    left: 10%;
+mat-card {
+    width: 90%;
+    left: 5%;
 }
 
-textarea {
+mat-form-field {
+    margin-top: 1rem;
+    margin-left: 1%;
+    margin-right: 1%;
+    margin-bottom: -1.38em;
+}
+
+button {
+    margin-top: 1rem;
+    width: 20%;
+    left: 1%;
+    margin-bottom: 1rem;
+}
+
+/* textarea {
     width: 85%;
     left: 10%;
-}
+} */

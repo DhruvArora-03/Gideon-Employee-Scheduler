@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'ges-v2';
+  savedPosts: {title: string, content:string}[] = []
+
+  onPostAdded(post: { title: string; content: string; }) {
+    this.savedPosts.push(post);
+  }
 }

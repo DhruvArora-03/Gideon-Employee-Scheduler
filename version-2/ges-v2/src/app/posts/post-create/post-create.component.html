@@ -1,40 +1,22 @@
-<!-- <mat-card appearance = 'raised'> -->
-<mat-form-field color="primary">
-    <mat-label>Enter Post</mat-label>
-    <textarea 
-        matInput 
-        rows="6" 
-        appearance="fill"
-        [(ngModel)]="enteredValue" 
-        placeholder="Type your post here!"></textarea>
+<mat-card appearance = 'raised'>
+    <mat-form-field color="primary">
+        <mat-label>Enter Post Title</mat-label>
+        <input 
+            matInput 
+            [(ngModel)]="enteredTitle" 
+            placeholder="Enter your title here!">
+    </mat-form-field>
+    <mat-form-field color="accent">
+        <mat-label>Enter Post Content</mat-label>
+        <textarea 
+            matInput 
+            rows="6" 
+            appearance="fill"
+            [(ngModel)]="enteredContent" 
+            placeholder="Type your post here!"></textarea>
+    </mat-form-field>
     <button 
         mat-raised-button
-        color="primary"
+        color="accent"
         (click)="onAddPost()">Save Post</button>
-    <mat-hint>Hint goes here</mat-hint>
-</mat-form-field>
-<!-- </mat-card> -->
-
-<p>{{ postData }}</p>
-
-<!-- <p>
-    <mat-card>
-        <mat-form-field appearance="fill">
-            <mat-label>Fill form field</mat-label>
-            <input matInput placeholder="Placeholder">
-            <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-            <mat-hint>Hint</mat-hint>
-        </mat-form-field>
-    </mat-card>
-</p>
-
-
-<p>
-    <mat-form-field appearance="outline">
-        <mat-label>Outline form field</mat-label>
-        <input matInput placeholder="Placeholder">
-        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-        <mat-hint>Hint</mat-hint>
-    </mat-form-field>
-</p>
-   -->
+</mat-card>

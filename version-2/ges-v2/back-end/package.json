@@ -1,0 +1,12 @@
+{
+  "name": "ges-server-api",
+  "version": "0.0.1",
+  "description": "RESTful api for ges project",
+  "main": "source/server.js",
+  "scripts": {
+    "dev": "nodemon source/server.js",
+    "build": "rm -rf build/ && prettier --write source/ && tsc"
+  },
+  "author": "Dhruv Arora",
+  "license": "UNLICENSED"
+}

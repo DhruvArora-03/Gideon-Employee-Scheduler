@@ -67,3 +67,13 @@ functions: GET POST PUT DELETE
     POST --> create a new exception
     PUT --> update employee data - including general availability
     DELETE --> delete employee
+
+/employee/availability/:id
+    GET --> get employee's availability
+    PUT --> update availability
+
+/employee/exceptions/:id
+    GET --> 
+    POST --> add new
+    PUT --> update
+    DELETE --> remove

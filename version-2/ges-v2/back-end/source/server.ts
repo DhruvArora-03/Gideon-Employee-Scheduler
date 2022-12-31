@@ -1,9 +1,16 @@
 import http from 'http'
 import express, { Express } from 'express'
 import morgan from 'morgan'
-import routes from './routes/posts'
+import posts_routes from './routes/posts'
+import managers_routes from './routes/managers'
+import employees_routes from './routes/employees'
+import { connect, connection } from 'mongoose'
 
 const router: Express = express();
+
+// connect to mongodb
+const uri = "mongodb+srv://Gideon:University380@ges.gjzwqlv.mongodb.net/?retryWrites=true&w=majority";
+connect(uri);
 
 // set up logging
 router.use(morgan('dev'));
@@ -34,7 +41,9 @@ router.use((req, res, next) => {
 });
 
 // use the routes in routes/posts.ts
-router.use('/', routes);
+router.use('/', posts_routes);
+router.use('/', managers_routes);
+router.use('/', employees_routes);
 
 // error handling - if we get here, no route was found
 router.use((req, res, next) => {
@@ -51,4 +60,16 @@ const PORT: any = process.env.PORT ?? 6060;
 // start the server on PORT
 httpServer.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+process.on('SIGINT', () => {
+    console.log('Closing the server');
+    connection.close();
+    process.exit(0);
+  });
+
+process.on('SIGTERM', () => {
+console.log('Closing the server');
+connection.close();
+process.exit(0);
 });

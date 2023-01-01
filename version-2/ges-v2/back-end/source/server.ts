@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import posts_routes from './routes/posts'
 import managers_routes from './routes/managers'
 import employees_routes from './routes/employees'
+import availability_routes from './routes/availability'
 import { connect, connection } from 'mongoose'
 
 const router: Express = express();
@@ -44,6 +45,7 @@ router.use((req, res, next) => {
 router.use('/', posts_routes);
 router.use('/', managers_routes);
 router.use('/', employees_routes);
+router.use('/', availability_routes);
 
 // error handling - if we get here, no route was found
 router.use((req, res, next) => {

@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { model, connect, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
+import axios, { AxiosResponse } from 'axios';
+import { addAvailability, deleteAvailability } from './availability';
 
 // create schema and model
-const employeeSchema = new Schema({
+const employeeSchema: Schema = new Schema({
     id: {type: Number, required: true},
     name: {type: String, required: true},
-    default_availability: {type: Object, required: true},
     exceptions: {type: Object, required: true, default: {}}
 });
 const Employee = model('Employees', employeeSchema);
@@ -25,15 +26,13 @@ const getEmployees = async (req: Request, res: Response, next: NextFunction) => 
 const addEmployee = async (req: Request, res: Response, next: NextFunction) => {
     let id: number = parseInt(req.body.id, 10);
     let name: string = req.body.name ?? null;
-    let default_availability = req.body.default_availability ?? null;
 
-    // check that id is valid an that name and default_availability are non-null
-    if (isNaN(id) || name === null || default_availability === null) {
+    // check that id is valid an that name is non-null
+    if (isNaN(id) || name === null) {
         return res.status(400).json({
             message: 'Invalid request',
             id: id,
-            name: name,
-            default_availability: default_availability,
+            name: name
         });
     }
 
@@ -41,16 +40,19 @@ const addEmployee = async (req: Request, res: Response, next: NextFunction) => {
     const employee = new Employee({
         id: id,
         name: name,
-        default_availability: default_availability,
         ...(req.body.exceptions && { exceptions: req.body.exceptions })
     });
 
     // save employee to mongodb
     await employee.save();
 
+    // request a new default_availability
+    let default_availability = await addAvailability(id);
+
     // return response
     return res.status(200).json({
-        message: employee
+        message: employee,
+        default_availability: default_availability
     });
 }
 
@@ -70,35 +72,6 @@ const getEmployee = async (req: Request, res: Response, next: NextFunction) => {
     });
 }
 
-// add an exception to an employee
-const addException = async (req: Request, res: Response, next: NextFunction) => {
-    // read employee id from request
-    let id: number = parseInt(req.params.id, 10);
-
-    // query mongodb
-    const employee = await Employee.findOne(
-        { id: id }
-    );
-    
-    // check if found an employee
-    if (!employee) {
-        return res.status(404).json({
-            message: "Employee not found"
-        });
-    }
-
-    // add exception to employee
-    employee.exceptions.push(req.body.exception);
-
-    // save employee to mongodb
-    await employee.save();
-
-    // return response
-    return res.status(200).json({
-        message: employee
-    });
-}
-
 // update an existing employee
 const updateEmployee = async (req: Request, res: Response, next: NextFunction) => {
     // read employee id from request
@@ -108,9 +81,7 @@ const updateEmployee = async (req: Request, res: Response, next: NextFunction) =
     const employee = await Employee.findOneAndUpdate(
         { id: id },
         {
-            ...(req.body.name && { name: req.body.name }),
-            ...(req.body.default_availability && { default_availability: req.body.default_availability }),
-            ...(req.body.exceptions && { exceptions: req.body.exceptions })
+            ...(req.body.name && { name: req.body.name })
         },
         { new: true }
     );
@@ -131,9 +102,13 @@ const deleteEmployee = async (req: Request, res: Response, next: NextFunction) =
         { id: id }
     );
 
+    // delete employee's availability
+    let availability = await deleteAvailability(id);
+
     // return response
     return res.status(200).json({
-        message: employee
+        message: employee,
+        availability: availability
     });
 }
 
@@ -141,7 +116,6 @@ export default {
     getEmployees,
     addEmployee,
     getEmployee,
-    addException,
     updateEmployee,
     deleteEmployee
 }

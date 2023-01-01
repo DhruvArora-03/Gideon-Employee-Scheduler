@@ -60,12 +60,11 @@ functions: GET POST PUT DELETE
 
 /employees
     GET --> get all employees
-    POST --> create new employee
+    POST --> create new employee - with default_availability of none
 
 /employee/:id
     GET --> get employee data
-    POST --> create a new exception
-    PUT --> update employee data - including general availability
+    PUT --> update employee data - NOT including general availability
     DELETE --> delete employee
 
 /employee/availability/:id

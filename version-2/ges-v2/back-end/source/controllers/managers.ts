@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { model, Schema } from 'mongoose';
 
 // create schema and model
-const managerSchema = new Schema({
+const managerSchema: Schema = new Schema({
     id: {type: Number, required: true},
     name: {type: String, required: true},
     permissions: {type: String, required: true, default: 'READ-ONLY'}
